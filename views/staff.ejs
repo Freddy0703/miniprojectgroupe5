@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion du Personnel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .main-content {
+            max-width: 1700px;
+            margin: auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .staff-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            text-align: center;
+        }
+        .staff-avatar {
+            margin-bottom: 15px;
+        }
+        .staff-avatar i {
+            color: #007bff;
+        }
+        .staff-info h3 {
+            margin: 10px 0;
+            color: #333;
+        }
+        .staff-info .role {
+            font-weight: bold;
+            color: #555;
+        }
+        .staff-info .speciality {
+            color: #777;
+        }
+        .staff-contact {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .staff-actions {
+            margin-top: 15px;
+        }
+        .staff-actions .btn {
+            background: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            margin: 0 5px;
+        }
+        .staff-actions .btn:hover {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/sidebar', { currentPage: 'staff' }) %>
+
+    
+    <main class="main-content">
+        <div class="header">
+            <h1>Gestion du Personnel</h1>
+            <button class="btn btn-primary" onclick="openAddStaffModal()">
+                <i class="fas fa-plus"></i> Nouveau Personnel
+            </button>
+        </div>
+
+        <div class="staff-grid">
+            <% staff.forEach(member => { %>
+            <div class="staff-card">
+                <div class="staff-avatar">
+                    <i class="fas fa-user-md fa-3x"></i>
+                </div>
+                <div class="staff-info">
+                    <h3><%= member.nom %> <%= member.prenom %></h3>
+                    <p class="role"><%= member.role %></p>
+                    <p class="speciality"><%= member.specialite %></p>
+                </div>
+                <div class="staff-contact">
+                    <p><i class="fas fa-phone"></i> <%= member.telephone %></p>
+                    <p><i class="fas fa-envelope"></i> <%= member.email %></p>
+                </div>
+                <div class="staff-actions">
+                    <button class="btn">
+                        <i class="fas fa-edit"></i>
+                    </button onclick="deleteStaff(<%= member.id %>)">> 
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </main>
+</body>
+</html>

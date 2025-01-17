@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Patients</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* Variables */
+        :root {
+            --primary-color: #4a90e2;
+            --primary-hover: #357abd;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f1c40f;
+            --text-color: #2c3e50;
+            --border-color: #dfe6e9;
+            --background-color: #f8f9fa;
+        }
+
+        /* Reset et styles globaux */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: var(--background-color);
+        }
+
+        /* Layout principal */
+        .main-content {
+            max-width: 1700px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* En-tête */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: var(--text-color);
+        }
+
+        /* Boutons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Barre de recherche */
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar input,
+        .search-bar select {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .search-bar input {
+            flex: 1;
+        }
+
+        /* Table des patients */
+        .patients-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .patients-table th,
+        .patients-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .patients-table th {
+            background-color: var(--background-color);
+            font-weight: 600;
+        }
+
+        .patients-table tr:hover {
+            background-color: var(--background-color);
+        }
+
+        /* Statuts */
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-actif {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-inactif {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--danger-color);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .pagination .btn {
+            margin: 0 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .patients-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/sidebar', { currentPage: 'patient' }) %>
+
+    <main class="main-content">
+      <div class="header">
+          <h1>Gestion des Patients</h1>
+          <a href="/add-patient" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Nouveau Patient
+          </a>
+      </div>
+  
+      <div class="search-bar">
+          <input type="text" placeholder="Rechercher un patient..." id="searchPatient" onkeyup="filterPatients()">
+          <select id="filterStatus" onchange="filterPatients()">
+              <option value="">Tous les statuts</option>
+              <option value="actif">Actif</option>
+              <option value="inactif">Inactif</option>
+          </select>
+      </div>
+  
+      <div class="patients-list">
+          <table class="patients-table">
+              <thead>
+                  <tr>
+                      <th>Matricule</th>
+                      <th>Nom</th>
+                      <th>Prénom</th>
+                      <th>Date de naissance</th>
+                      <th>Téléphone</th>
+                      <th>Email</th>
+                      <th>Statut</th>
+                      <th>Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <% patients.forEach(patient => { %>
+                  <tr>
+                      <td><%= patient.matricule %></td>
+                      <td><%= patient.nom %></td>
+                      <td><%= patient.prenom %></td>
+                      <td><%= patient.date_naissance %></td>
+                      <td><%= patient.telephone %></td>
+                      <td><%= patient.email %></td>
+                      <td><span class="status status-<%= patient.statut %>"><%= patient.statut %></span></td>
+                      <td>
+                        <button class="btn" onclick="window.location.href='/edit-patient/<%= patient.matricule %>'">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                          <button class="btn"><i class="fas fa-eye"></i></button>
+                          <button class="btn"><i class="fas fa-trash"></i></button>
+                      </td>
+                  </tr>
+                  <% }) %>
+              </tbody>
+          </table>
+      </div>
+  
+      <!-- Section de pagination -->
+      <div class="pagination">
+          <% if (currentPage > 1) { %>
+              <a href="/dashboard/patients?page=<%= currentPage - 1 %>" class="btn btn-primary">Précédent</a>
+          <% } %>
+  
+          <% for (let i = 1; i <= totalPages; i++) { %>
+              <a href="/dashboard/patients?page=<%= i %>" class="btn <%= currentPage === i ? 'btn-primary' : '' %>">
+                  <%= i %>
+              </a>
+          <% } %>
+  
+          <% if (currentPage < totalPages) { %>
+              <a href="/dashboard/patients?page=<%= currentPage + 1 %>" class="btn btn-primary">Suivant</a>
+          <% } %>
+      </div>
+  </main>
+  
+  <script>
+  function filterPatients() {
+      const searchInput = document.getElementById('searchPatient').value.toLowerCase();
+      const filterStatus = document.getElementById('filterStatus').value;
+      const table = document.querySelector('.patients-table tbody');
+      const rows = table.getElementsByTagName('tr');
+  
+      for (let i = 0; i < rows.length; i++) {
+          const cells = rows[i].getElementsByTagName('td');
+          const name = cells[1].textContent.toLowerCase(); // Nom
+          const firstName = cells[2].textContent.toLowerCase(); // Prénom
+          const status = cells[6].textContent.toLowerCase(); // Statut
+  
+          const matchesSearch = name.includes(searchInput) || firstName.includes(searchInput);
+          const matchesStatus = filterStatus === "" || status === filterStatus;
+  
+          if (matchesSearch && matchesStatus) {
+              rows[i].style.display = ""; // Afficher si correspond
+          } else {
+              rows[i].style.display = "none"; // Masquer si ne correspond pas
+          }
+      }
+  }
+  </script>

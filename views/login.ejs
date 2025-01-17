@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portail du Personnel Hospitalier</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* [Previous styles remain the same until .password-container] */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #4a90e2, #2c3e96);
+        }
+        
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .left-panel {
+            flex: 1;
+            background: #4a90e2;
+            padding: 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-form {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 400px;
+        }
+        
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .password-container input {
+            padding-right: 40px; /* Space for the eye icon */
+            margin-top: 0;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 5px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-password:hover {
+            color: #4a90e2;
+        }
+
+        .toggle-password:focus {
+            outline: none;
+        }
+
+        /* Rest of your existing styles */
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .welcome-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+        
+        button[type="submit"] {
+            background: #4a90e2;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        button[type="submit"]:hover {
+            background: #357abd;
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin-top: 10px;
+        }
+        
+        .forgot-password a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .card-login {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <h1>Bienvenue sur le portail du personnel</h1>
+            <p class="welcome-text">
+                "Connectez-vous pour accéder à votre espace personnel hospitalier, gérer vos plannings et suivre vos patients."
+            </p>
+        </div>
+        <div class="login-form">
+            <h2>Connexion</h2>
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="email">Email professionnel</label>
+                    <input type="email" id="email" name="email" placeholder="Entrez votre email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" placeholder="Entrez votre mot de passe" required>
+                        <button type="button" class="toggle-password" aria-label="Toggle password visibility">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="forgot-password">
+                    <a href="#">Mot de passe oublié ?</a>
+                </div>
+                <button type="submit">Se connecter</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.querySelector('.toggle-password');
+            const passwordInput = document.querySelector('#password');
+            const eyeIcon = togglePassword.querySelector('i');
+
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle the eye icon
+                eyeIcon.classList.toggle('fa-eye');
+                eyeIcon.classList.toggle('fa-eye-slash');
+            });
+        });
+    </script>
+</body>
+</html>

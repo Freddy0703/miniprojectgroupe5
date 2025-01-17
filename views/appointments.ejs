@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Rendez-vous</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* Variables globales */
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary: #64748b;
+    --danger: #ef4444;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* Reset et styles de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.5;
+    color: var(--gray-600);
+    background-color: var(--gray-100);
+}
+
+/* Layout principal */
+.main-content {
+    margin-left: 250px; /* Ajuster selon la largeur de votre sidebar */
+    padding: 2rem;
+}
+
+/* En-tête */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-size: 1.875rem;
+    color: var(--gray-600);
+    font-weight: 600;
+}
+
+/* Boutons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    gap: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Calendrier */
+.calendar-container {
+    background-color: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.calendar-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-600);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1rem;
+}
+
+.calendar-day {
+    border: 1px solid var(--gray-200);
+    border-radius: 0.375rem;
+    padding: 1rem;
+    min-height: 200px;
+}
+
+.calendar-day h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    margin-bottom: 1rem;
+    text-transform: capitalize;
+}
+
+/* Cartes de rendez-vous */
+.appointments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.appointment-card {
+    background-color: var(--gray-100);
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    border-left: 3px solid var(--primary);
+}
+
+.appointment-card .time {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+}
+
+.appointment-card .patient-name {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.appointment-card .reason {
+    color: var(--gray-500);
+    font-size: 0.75rem;
+}
+
+/* Status des rendez-vous */
+.status-confirmed {
+    border-left-color: var(--success);
+}
+
+.status-pending {
+    border-left-color: var(--warning);
+}
+
+.status-cancelled {
+    border-left-color: var(--danger);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--white);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: var(--shadow-md);
+}
+
+/* Formulaire */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--gray-600);
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--gray-300);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .calendar-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .calendar-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .calendar-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+}
+    </style>
+</head>
+<body>
+
+    <%- include('../partials/sidebar', { currentPage: 'appointments' }) %>
+
+    
+    <main class="main-content">
+        <div class="header">
+            <h1>Gestion des Rendez-vous</h1>
+            <button class="btn btn-primary" onclick="openAddAppointmentModal()">
+                <i class="fas fa-plus"></i> Nouveau Rendez-vous
+            </button>
+        </div>
+
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button class="btn" onclick="previousWeek()"><i class="fas fa-chevron-left"></i></button>
+                <h2 id="currentWeek">Semaine du <%= weekStart %></h2>
+                <button class="btn" onclick="nextWeek()"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            
+            <div class="calendar-grid">
+                <% for(let day of weekDays) { %>
+                <div class="calendar-day">
+                    <h3><%= day.date %></h3>
+                    <div class="appointments-list">
+                        <% day.appointments.forEach(apt => { %>
+                        <div class="appointment-card status-<%= apt.status %>">
+                            <div class="time"><%= apt.time %></div>
+                            <div class="patient-name"><%= apt.patientName %></div>
+                            <div class="reason"><%= apt.reason %></div>
+                        </div>
+                        <% }) %>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Nouveau Rendez-vous -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <form id="appointmentForm">
+                <h2>Nouveau Rendez-vous</h2>
+                <div class="form-group">
+                    <label>Patient</label>
+                    <select name="patient_id" required>
+                        <% patients.forEach(patient => { %>
+                        <option value="<%= patient.id %>"><%= patient.nom %> <%= patient.prenom %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Heure</label>
+                    <input type="time" name="time" required>
+                </div>
+                <div class="form-group">
+                    <label>Motif</label>
+                    <input type="text" name="reason" required>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <button type="button" class="btn" onclick="closeModal()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Gestion du modal
+function openAddAppointmentModal() {
+    const modal = document.getElementById('appointmentModal');
+    modal.classList.add('active');
+}
+
+function closeModal() {
+    const modal = document.getElementById('appointmentModal');
+    modal.classList.remove('active');
+}
+
+// Navigation dans le calendrier
+function previousWeek() {
+    // Implémenter la navigation vers la semaine précédente
+    const currentWeek = getCurrentWeek();
+    const newWeek = new Date(currentWeek);
+    newWeek.setDate(newWeek.getDate() - 7);
+    updateCalendar(newWeek);
+}
+
+function nextWeek() {
+    // Implémenter la navigation vers la semaine suivante
+    const currentWeek = getCurrentWeek();
+    const newWeek = new Date(currentWeek);
+    newWeek.setDate(newWeek.getDate() + 7);
+    updateCalendar(newWeek);
+}
+
+function getCurrentWeek() {
+    // Récupérer la date de la semaine actuelle depuis l'élément HTML
+    const weekText = document.getElementById('currentWeek').textContent;
+    // Convertir le texte en date (à adapter selon votre format de date)
+    return new Date(weekText.replace('Semaine du ', ''));
+}
+
+function updateCalendar(date) {
+    // Faire une requête AJAX pour obtenir les rendez-vous de la nouvelle semaine
+    fetch(`/dashboard/appointments?week=${date.toISOString()}`)
+        .then(response => response.json())
+        .then(data => {
+            // Mettre à jour l'affichage du calendrier avec les nouvelles données
+            // Cette partie dépendra de votre structure HTML
+        })
+        .catch(error => console.error('Erreur:', error));
+}
+
+// Gestion du formulaire
+document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('/dashboard/appointments', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeModal();
+            // Rafraîchir le calendrier
+            updateCalendar(getCurrentWeek());
+        }
+    })
+    .catch(error => console.error('Erreur:', error));
+});
+    </script>
+</body>
+</html>

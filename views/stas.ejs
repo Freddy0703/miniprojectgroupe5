@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+    <%- include('../partials/sidebar', { currentPage: 'stats' }) %>
+
+    
+    <main class="main-content">
+        <div class="header">
+            <h1>Statistiques</h1>
+            <div class="date-filter">
+                <select id="periodSelect">
+                    <option value="week">Cette semaine</option>
+                    <option value="month">Ce mois</option>
+                    <option value="year">Cette année</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Nouveaux Patients</h3>
+                <div class="value"><%= (typeof stats !== 'undefined' && stats.newPatients) ? stats.newPatients : 0 %></div>
+                <div class="trend <%= (typeof stats !== 'undefined' && stats.newPatientsTrend && stats.newPatientsTrend > 0) ? 'up' : 'down' %>">
+                    <i class="fas fa-arrow-<%= (typeof stats !== 'undefined' && stats.newPatientsTrend && stats.newPatientsTrend > 0) ? 'up' : 'down' %>"></i>
+                    <%= (typeof stats !== 'undefined' && stats.newPatientsTrend) ? Math.abs(stats.newPatientsTrend) : 0 %>%
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Rendez-vous</h3>
+                <div class="value"><%= (typeof stats !== 'undefined' && stats.appointments) ? stats.appointments : 0 %></div>
+                <div class="trend <%= (typeof stats !== 'undefined' && stats.appointmentsTrend && stats.appointmentsTrend > 0) ? 'up' : 'down' %>">
+                    <i class="fas fa-arrow-<%= (typeof stats !== 'undefined' && stats.appointmentsTrend && stats.appointmentsTrend > 0) ? 'up' : 'down' %>"></i>
+                    <%= (typeof stats !== 'undefined' && stats.appointmentsTrend) ? Math.abs(stats.appointmentsTrend) : 0 %>%
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Taux d'occupation</h3>
+                <div class="value"><%= (typeof stats !== 'undefined' && stats.occupancyRate) ? stats.occupancyRate + '%' : 'N/A' %></div>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3>Évolution des rendez-vous</h3>
+                <canvas id="appointmentsChart"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3>Répartition par type de consultation</h3>
+                <canvas id="consultationTypeChart"></canvas>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
